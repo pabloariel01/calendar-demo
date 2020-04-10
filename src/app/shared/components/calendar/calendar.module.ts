@@ -7,6 +7,7 @@ import { EventComponent } from './event/event.component';
 
 @NgModule({
   declarations: [CalendarComponent, DateGridComponent, DayComponent, EventComponent],
-  imports: [CommonModule]
+  imports: [CommonModule],
+  exports:[CalendarComponent]
 })
 export class CalendarModule {}
