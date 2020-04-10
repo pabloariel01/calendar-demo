@@ -119,5 +119,10 @@
       }
     }
   },
-  "defaultProject": "jobsity-challengeallenge"
+  "defaultProject": "jobsity-challengeallenge",
+  "schematics": {
+    "@schematics/angular:component": {
+      "styleext": "scss"
+    }
+  }
 }
