@@ -1,1 +1,48 @@
-<p>calendar works!</p>
+<div class="calendar__wrapper">
+  <!-- <div class="calendar__input-wrapper" (click)="show = !show">
+    <input readonly class="calendar__input" [(ngModel)]="selectedDate" />
+  </div> -->
+  <div class="calendar" #calendar>
+    <div class="calendar__navs">
+      <div class="calendar__month-nav">
+        <button class="calendar__nav-btn" (click)="prevMonth()">&lt;</button>
+        <span>
+          {{ today.format('MMMM').toUpperCase() }}
+          {{ today.format('YYYY') }}
+        </span>
+        <button class="calendar__nav-btn" (click)="nextMonth()">
+          &gt;
+        </button>
+      </div>
+    </div>
+    <!-- separate here into components -->
+
+    <table class="col s12">
+      <tr>
+        <th class="calendar__day-name" *ngFor="let name of days">
+          {{ name }}
+        </th>
+      </tr>
+
+      <tr class="calendar__week" *ngFor="let week of weeks">
+        <ng-container *ngFor="let day of week">
+          <td
+            class="calendar__date"
+            [ngClass]="{
+              today: day.today,
+              selected: day.selected,
+              disabled: !isSelectedMonth(day.mDate)
+            }"
+            (click)="selectDate(day)"
+          >
+            <span class="calendar__number">{{ day.mDate.date() }}</span>
+            <!-- replace component here -->
+            <span class="appointments"> appointment</span>
+            <!-- replace component here -->
+          </td>
+        </ng-container>
+      </tr>
+    </table>
+    <!-- separate here into components -->
+  </div>
+</div>
