@@ -26,16 +26,8 @@
 
       <tr class="calendar__week" *ngFor="let week of weeks">
         <ng-container *ngFor="let day of week">
-          <td
-            class="calendar__date"
-            [ngClass]="{
-              today: day.today,
-              selected: day.selected,
-              disabled: !isSelectedMonth(day.mDate)
-            }"
-            (click)="selectDate(day)"
-          >
-            <span class="calendar__number">{{ day.mDate.date() }}</span>
+          <td class="calendar__date" [ngClass]="day.classNames" (click)="selectDate(day)">
+            <span class="calendar__number">{{ day.date.date() }}</span>
             <!-- replace component here -->
             <span class="appointments"> appointment</span>
             <!-- replace component here -->

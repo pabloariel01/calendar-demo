@@ -2,10 +2,20 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import * as moment from 'moment';
 
 //move to interfaces
-export interface CalendarDate {
-  mDate: moment.Moment;
-  selected?: boolean;
-  today?: boolean;
+export interface ICalendarCell {
+  date: moment.Moment;
+  isSelected?: boolean;
+  isToday?: boolean;
+
+  isDisabled?: boolean; //future implementation
+  classNames?: ICellClasses;
+}
+
+export interface ICellClasses {
+  weekEnd?: boolean;
+  offMonth: boolean;
+  today: boolean;
+  selected: boolean;
 }
 
 @Component({
@@ -16,28 +26,24 @@ export interface CalendarDate {
 export class CalendarComponent implements OnInit {
   public today: moment.Moment;
 
-  public days: string[] = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday'
-  ];
-  public weeks: Array<CalendarDate[]> = [];
+  public days: string[];
+  public weeks: Array<ICalendarCell[]> = [];
   public selectedDate;
+
+  private localeData = moment.localeData();
 
   constructor() {}
 
   ngOnInit() {
+    this.days = this.localeData.weekdays();
     this.today = moment();
     this.selectedDate = moment(this.today).format('DD/MM/YYYY');
-    this.generateCalendar();
+
+    this.renderCalendar();
   }
 
-  private generateCalendar(): void {
-    const dates = this.fillDates(this.today);
+  private renderCalendar(): void {
+    const dates = this.draw(this.today);
     const weeks = [];
     //cange to hight order function
     while (dates.length > 0) {
@@ -46,7 +52,7 @@ export class CalendarComponent implements OnInit {
     this.weeks = weeks;
   }
 
-  private fillDates(currentMoment: moment.Moment) {
+  private draw(currentMoment: moment.Moment): ICalendarCell[] {
     const firstOfMonth = moment(currentMoment).startOf('month').day();
     const lastOfMonth = moment(currentMoment).endOf('month').day();
 
@@ -59,20 +65,38 @@ export class CalendarComponent implements OnInit {
     const startCalendar = firstDayOfGrid.date();
 
     const nmbrOfDays = startCalendar - startCalendar + lastDayOfGrid.diff(firstDayOfGrid, 'days');
-    const daySlots = new Array(nmbrOfDays).fill(0);
+    const daySlots: ICalendarCell[] = new Array(nmbrOfDays).fill(0);
 
     return daySlots
       .map((_, i) => i + startCalendar)
       .map((date) => {
         const newDate = moment(firstDayOfGrid).date(date);
+        const isOffMonth = this.isOffMonth(newDate);
+        //refactor
         return {
           today: this.isToday(newDate),
-          selected: this.isSelected(newDate),
-          mDate: newDate
+          isSelected: this.isSelected(newDate),
+          date: newDate,
+          classNames: {
+            weekend: this.isWeekend(newDate) && !isOffMonth,
+            offMonth: isOffMonth,
+            today: this.isToday(newDate),
+            selected: this.isSelected(newDate)
+          }
         };
       });
   }
 
+  private isOffMonth(date: moment.Moment): boolean {
+    return this.localeData.months(date) !== this.today.format('MMMM');
+  }
+
+  private isWeekend(date: moment.Moment): boolean {
+    const weekends = ['Saturday', 'Sunday'];
+    const todayDay = this.localeData.weekdays(date);
+
+    return weekends.indexOf(todayDay) != -1;
+  }
   private isToday(date: moment.Moment): boolean {
     return moment().isSame(moment(date), 'day');
   }
@@ -83,20 +107,16 @@ export class CalendarComponent implements OnInit {
 
   public prevMonth(): void {
     this.today = moment(this.today).subtract(1, 'months');
-    this.generateCalendar();
+    this.renderCalendar();
   }
 
   public nextMonth(): void {
     this.today = moment(this.today).add(1, 'months');
-    this.generateCalendar();
+    this.renderCalendar();
   }
 
-  public selectDate(date: CalendarDate) {
-    this.selectedDate = moment(date.mDate).format('DD/MM/YYYY');
-    this.generateCalendar();
-  }
-  public isSelectedMonth(date: moment.Moment): boolean {
-    const today = moment();
-    return moment(date).isSame(this.today, 'month') && moment(date).isSameOrBefore(today);
+  public selectDate(date: ICalendarCell): void {
+    this.selectedDate = moment(date.date).format('DD/MM/YYYY');
+    this.renderCalendar();
   }
 }
