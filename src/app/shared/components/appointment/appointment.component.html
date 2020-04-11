@@ -1,57 +1,85 @@
 Manage Reminder
 
-<div *ngIf="selected">
-  <p>selected date:{{ selected }}</p>
+<div *ngIf="selectedDate">
+  <p>selectedDate date:{{ selectedDate }}</p>
 </div>
 
 <form [formGroup]="reminderForm" (ngSubmit)="submitForm()" novalidate>
-  <mat-form-field>
-    <textarea
-      matInput
-      #reminder
-      placeholder="Reminder"
-      formControlName="reminder"
-      maxlength="30"
-    ></textarea>
-    <mat-hint align="end">{{ reminder.value?.length || 0 }}/30</mat-hint>
-    <!-- error -->
-    <mat-error *ngIf="hasErrors('reminder')">
-      This field is mandatory.
-    </mat-error>
-  </mat-form-field>
+  <mat-card class="shipping-card">
+    <mat-card-header>
+      <mat-card-title>Reminder Details</mat-card-title>
+    </mat-card-header>
 
-  <!-- Date picker -->
-  <mat-form-field>
-    <input
-      matInput
-      readonly
-      [matDatepicker]="picker"
-      placeholder="Date"
-      formControlName="appointmentDate"
-      (dateChange)="setDate($event)"
-    />
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-  </mat-form-field>
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <textarea
+              matInput
+              #reminder
+              placeholder="Reminder"
+              formControlName="reminder"
+              maxlength="30"
+            ></textarea>
+            <mat-hint align="end">{{ reminder.value?.length || 0 }}/30</mat-hint>
+            <!-- error -->
+            <mat-error *ngIf="hasErrors('reminder')">
+              This field is mandatory.
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
 
-  <mat-form-field>
-    <input matInput type="color" formControlName="appointmentColor" placeholder="Color" />
-  </mat-form-field>
+      <!-- Date picker -->
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input
+              matInput
+              readonly
+              [matDatepicker]="picker"
+              placeholder="Date"
+              formControlName="appointmentDate"
+              (dateChange)="setDate($event)"
+            />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput type="color" formControlName="appointmentColor" placeholder="Color" />
+          </mat-form-field>
+        </div>
+      </div>
 
-  <mat-form-field>
-    <input matInput type="time" formControlName="appointmentTime" placeholder="Time" />
-  </mat-form-field>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput type="time" formControlName="appointmentTime" placeholder="Time" />
+          </mat-form-field>
+        </div>
+      </div>
 
-  <!-- Class -->
-  <mat-form-field>
-    <mat-label>City</mat-label>
-    <mat-select [(value)]="selected" formControlName="city">
-      <mat-option [value]="city" *ngFor="let city of citiesArray">{{ city }} </mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <!-- Submit -->
-  <div class="button-wrapper">
-    <button mat-flat-button color="primary">Submit</button>
-  </div>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <mat-label>City</mat-label>
+            <mat-select formControlName="city">
+              <mat-option [value]="city" *ngFor="let city of citiesArray">{{ city }} </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" type="submit">Submit</button>
+    </mat-card-actions>
+    <!-- Submit -->
+    <div class="button-wrapper">
+      <button mat-flat-button color="primary" type="submit">Submit</button>
+    </div>
+  </mat-card>
 </form>
