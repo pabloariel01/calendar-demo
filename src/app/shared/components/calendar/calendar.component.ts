@@ -1,13 +1,13 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import * as moment from 'moment';
 
 //move to interfaces
-export interface ICalendarCell {
+export interface ICalendarCell<T> {
   date: moment.Moment;
   isSelected?: boolean;
   isToday?: boolean;
-
   isDisabled?: boolean; //future implementation
+  apointments?: T[];
   classNames?: ICellClasses;
 }
 
@@ -27,8 +27,15 @@ export class CalendarComponent implements OnInit {
   public today: moment.Moment;
 
   public days: string[];
-  public weeks: Array<ICalendarCell[]> = [];
+  public weeks: Array<ICalendarCell<any>[]> = [];
   public selectedDate;
+
+  @Input() public selected;
+
+  @Output() public daySelected: EventEmitter<moment.Moment> = new EventEmitter();
+
+  //Todo: update when interface is created
+  @Output() public appointmentSelected: EventEmitter<any> = new EventEmitter();
 
   private localeData = moment.localeData();
 
@@ -43,21 +50,25 @@ export class CalendarComponent implements OnInit {
   }
 
   private renderCalendar(): void {
+    //transforms plain array to array of weeks
     const dates = this.draw(this.today);
+    this.transformIntoWeeks(dates);
+  }
+
+  private transformIntoWeeks(dates: ICalendarCell<any>[]): void {
     const weeks = [];
-    //cange to hight order function
     while (dates.length > 0) {
       weeks.push(dates.splice(0, 7));
     }
     this.weeks = weeks;
   }
 
-  private draw(currentMoment: moment.Moment): ICalendarCell[] {
+  private draw(currentMoment: moment.Moment): ICalendarCell<any>[] {
     const firstOfMonth = moment(currentMoment).startOf('month').day();
     const lastOfMonth = moment(currentMoment).endOf('month').day();
 
     const firstDayOfGrid = moment(currentMoment).startOf('month').subtract(firstOfMonth, 'days');
-    //it would be 35 days,*(7 days, 5 weeks, but it cuts off some months)
+    // it would be 35 days,*(7 days, 5 weeks, but it cuts off some months)
     const lastDayOfGrid = moment(currentMoment)
       .endOf('month')
       .subtract(lastOfMonth, 'days')
@@ -65,14 +76,14 @@ export class CalendarComponent implements OnInit {
     const startCalendar = firstDayOfGrid.date();
 
     const nmbrOfDays = startCalendar - startCalendar + lastDayOfGrid.diff(firstDayOfGrid, 'days');
-    const daySlots: ICalendarCell[] = new Array(nmbrOfDays).fill(0);
+    const daySlots: ICalendarCell<any>[] = new Array(nmbrOfDays).fill(0);
 
     return daySlots
       .map((_, i) => i + startCalendar)
       .map((date) => {
         const newDate = moment(firstDayOfGrid).date(date);
         const isOffMonth = this.isOffMonth(newDate);
-        //refactor
+        // refactor
         return {
           today: this.isToday(newDate),
           isSelected: this.isSelected(newDate),
@@ -87,6 +98,11 @@ export class CalendarComponent implements OnInit {
       });
   }
 
+  //TODO: figure out how to add appointments
+  // private hasAppointment(date: moment.Moment): any[] {
+
+  // }
+
   private isOffMonth(date: moment.Moment): boolean {
     return this.localeData.months(date) !== this.today.format('MMMM');
   }
@@ -95,7 +111,7 @@ export class CalendarComponent implements OnInit {
     const weekends = ['Saturday', 'Sunday'];
     const todayDay = this.localeData.weekdays(date);
 
-    return weekends.indexOf(todayDay) != -1;
+    return weekends.indexOf(todayDay) !== -1;
   }
   private isToday(date: moment.Moment): boolean {
     return moment().isSame(moment(date), 'day');
@@ -115,8 +131,9 @@ export class CalendarComponent implements OnInit {
     this.renderCalendar();
   }
 
-  public selectDate(date: ICalendarCell): void {
+  public selectDate(date: ICalendarCell<any>): void {
     this.selectedDate = moment(date.date).format('DD/MM/YYYY');
+    this.daySelected.emit(date.date);
     this.renderCalendar();
   }
 }
