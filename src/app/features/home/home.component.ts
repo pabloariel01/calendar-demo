@@ -28,8 +28,12 @@ export class HomeComponent implements OnInit {
       .subscribe((date: moment.Moment) => (this.selected = date));
   }
 
-  public onDaySelected(date): void {
+  public DaySelected(date): void {
     this.store.dispatch(new SelectDate(date));
     //this.selected = date;
+  }
+
+  public appointmentCreated(appointment) {
+    console.log(appointment);
   }
 }
