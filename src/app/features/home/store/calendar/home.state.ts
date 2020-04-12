@@ -1,6 +1,6 @@
 import { State, Action, StateContext, createSelector, Selector } from '@ngxs/store';
 import { AddAppointment, SelectDate, UpdateAppointment } from './home.actions';
-import { initialState, ICalendarState } from './interfaces/calendar-structure';
+import { initialState, ICalendarState } from './config/homeState-config';
 import { AppointmentService } from '@core/services/appointment.service';
 
 import * as moment from 'moment';
@@ -94,7 +94,7 @@ export class HomesState {
       `${[position[0]]}.${[position[1]]}.${[position[2]]}`,
       null
     );
-    
+
     appointments = appointments.filter((appointments) => appointments.id !== appointment.id);
     appointments.push(appointment);
     _.set(

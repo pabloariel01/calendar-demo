@@ -1,6 +1,6 @@
 import * as moment from 'moment';
-import { IAppointment } from '../../home.component';
 import { IDictionary } from '@core/utils/interfaces/dictionary';
+import { IAppointment } from '@home/home.component';
 
 export interface ICalendarState {
   years?: IDictionary<IMonth>;

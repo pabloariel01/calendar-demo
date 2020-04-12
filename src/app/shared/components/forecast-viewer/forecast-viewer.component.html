@@ -1,0 +1,10 @@
+<div *ngIf="dayForecast; else noInfo">
+  <p><b>Temperature:</b> <span class="wheaterInfo">{{ convertToCelcius(dayForecast.temp.day) | number : '1.2' }}°</span></p>
+  <p><b>Wheather: </b> <span class="wheaterInfo">{{ dayForecast.weather[0].description }}</span></p>
+</div>
+
+<ng-template #noInfo>
+  <p>
+    There is no Whather information for this city at this Date.
+  </p>
+</ng-template>

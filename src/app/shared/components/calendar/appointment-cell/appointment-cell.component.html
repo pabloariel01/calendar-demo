@@ -4,8 +4,7 @@
   [style.backgroundColor]="appointment.color" 
   *ngFor="let appointment of appointments"
   (click)="pillSelected($event,appointment)"
-  >{{
-    appointment.reminder 
-    
-  }}</mat-chip>
+  >
+  {{ appointment.reminder}}
+</mat-chip>
 </mat-chip-list>

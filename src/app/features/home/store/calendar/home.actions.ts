@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { IAppointment } from '../home.component';
+import { IAppointment } from '@home/home.component';
 
 export class SelectDate {
   static readonly type = '[Home] setDate';
@@ -18,3 +18,8 @@ export class DeleteAppointment {
   static readonly type = '[Home] deleteAppointment';
   constructor(public appointment: IAppointment) {}
 }
+export class DeleteAllDayAppointments {
+  static readonly type = '[Home] deleteAppointment';
+  constructor(public appointment: IAppointment) {}
+}
+

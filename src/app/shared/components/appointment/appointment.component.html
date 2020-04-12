@@ -5,6 +5,9 @@
     </mat-card-header>
 
     <mat-card-content>
+      <div>
+        <ng-content></ng-content>
+      </div>
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
@@ -66,8 +69,9 @@
         <div class="col">
           <mat-form-field class="full-width">
             <mat-label>City</mat-label>
-            <mat-select formControlName="city">
-              <mat-option [value]="city" *ngFor="let city of citiesArray">{{ city }} </mat-option>
+            <mat-select formControlName="city" (selectionChange)='cityCHanged($event)'>
+              <mat-option value=0 disabled selected>Select One</mat-option>
+              <mat-option [value]="city.id" *ngFor="let city of cities">{{ city.name }} </mat-option>
             </mat-select>
           </mat-form-field>
         </div>
