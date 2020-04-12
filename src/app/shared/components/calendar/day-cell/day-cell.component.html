@@ -1,1 +1,23 @@
-<p>day-cell works!</p>
+<mat-card>
+    <mat-card-title>
+      <span class="calendar__number" [ngClass]="day.classNames">{{
+        day.date.date()
+      }}</span>
+    </mat-card-title>
+    <mat-card-content>
+      <!-- replace component here -->
+      <span class="appointments"> appointment:{{ day.apointments.length }}</span>
+      <app-appointment-cell [appointment]="appointment" *ngFor="let appointment of day.appointments"></app-appointment-cell>
+      <!-- replace component here -->
+    </mat-card-content>
+    <!-- <mat-card-footer> -->
+    <mat-card-actions>
+      <button mat-button color="primary" (click)="(NewAppointment)">
+        Add
+      </button>
+      <button mat-raised-button color="primary" (click)="(removeAllAppointment)">
+        Remove all
+      </button>
+    </mat-card-actions>
+    <!-- </mat-card-footer> -->
+  </mat-card>

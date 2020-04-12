@@ -1,0 +1,23 @@
+.calendar {
+  &__number {
+    background-color: blue;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+  }
+}
+.today {
+  color: orange;
+}
+
+.offMonth {
+  color: gray;
+}
+
+.weekend {
+  color: blue;
+}
+
+.selected {
+  background-color: blue;
+}
