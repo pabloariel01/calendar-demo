@@ -4,6 +4,7 @@ import { IAppointment } from 'src/app/features/home/home.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { isNull } from 'util';
 import * as moment from 'moment';
+import { ICity } from '@core/constants/interfaces/forecast';
 
 @Component({
   selector: 'app-appointment',
@@ -13,15 +14,16 @@ import * as moment from 'moment';
 export class AppointmentComponent implements OnInit, OnChanges {
   //TODO: needs to recieve a ICallcell in order to update
   // @Input() public selectedDate: ICalendarCell<IAppointment>;
+  @Input() public cities:ICity[]=[];
   @Input() public selectedAppointment: IAppointment;
   @Input() public selectedDate: moment.Moment;
   @Output() public appointmentCreated: EventEmitter<IAppointment> = new EventEmitter();
   @Output() public appointmentRemoved: EventEmitter<IAppointment> = new EventEmitter();
+  @Output() public cityChanged:EventEmitter<ICity>=new EventEmitter();
   public reminderForm: FormGroup;
 
   constructor(public fb: FormBuilder) {}
 
-  public citiesArray: any = ['NYC', 'New Mexico', 'Buenos Aires', 'Bogota', 'Quito'];
 
   ngOnInit(): void {
     this.initForm();
@@ -45,7 +47,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
       appointmentTime: ['', [Validators.required]],
       appointmentColor: ['', [Validators.required]],
       id:[''],
-      city: [''],
+      city: ['0',[Validators.required]],
     });
   }
 
@@ -84,6 +86,12 @@ export class AppointmentComponent implements OnInit, OnChanges {
   public removeAppointment() {
     this.reminderForm.reset();
     this.appointmentRemoved.emit();
+  }
+
+  public cityCHanged(newValue):void{
+    const id=newValue.value
+    const city =this.cities.find(city=>city.id==id)
+    this.cityChanged.emit(city)
   }
   public canRemove() {}
 
