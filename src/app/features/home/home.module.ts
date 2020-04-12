@@ -7,7 +7,8 @@ import { CalendarModule } from 'src/app/shared/components/calendar/calendar.modu
 import { AppointmentModule } from 'src/app/shared/components/appointment/appointment.module';
 import { DayScheduleModule } from 'src/app/shared/components/day-schedule/day-schedule.module';
 import { NgxsModule } from '@ngxs/store';
-import { HomesState } from './store/home.state';
+import { HomesState } from './store/calendar/home.state';
+import { ForecastState } from './store/forecast/forecast.state';
 
 @NgModule({
   declarations: [HomeComponent],
@@ -17,7 +18,7 @@ import { HomesState } from './store/home.state';
     CalendarModule,
     AppointmentModule,
     DayScheduleModule,
-    NgxsModule.forFeature([HomesState])
+    NgxsModule.forFeature([HomesState, ForecastState])
   ]
 })
 export class HomeModule {}

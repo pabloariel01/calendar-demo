@@ -6,5 +6,11 @@
   (appointmentSelected)="calendarAppointmentSelected($event)"
 ></app-calendar>
 <!-- <app-day-schedule></app-day-schedule> -->
-<app-appointment [selectedDate]="selected" [selectedAppointment]="selectedAppointment" (appointmentCreated)="appointmentCreated($event)">
+<app-appointment
+  [selectedDate]="selected"
+  [cities]="cities"
+  [selectedAppointment]="selectedAppointment"
+  (appointmentCreated)="appointmentCreated($event)"
+  (cityChanged)="cityChanged($event)"
+>
 </app-appointment>

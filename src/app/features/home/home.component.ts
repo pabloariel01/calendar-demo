@@ -1,12 +1,15 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { ICalendarCell } from 'src/app/shared/components/calendar/calendar.component';
 
 import * as moment from 'moment';
-import { Store, Select } from '@ngxs/store';
-import { HomesState } from './store/home.state';
-import { SelectDate, AddAppointment, UpdateAppointment } from './store/home.actions';
-import { map, takeUntil, delay } from 'rxjs/operators';
-import { Observable, Subscription, Subject } from 'rxjs';
+import { Store } from '@ngxs/store';
+import { HomesState } from './store/calendar/home.state';
+import { SelectDate, AddAppointment, UpdateAppointment } from './store/calendar/home.actions';
+import { map, takeUntil, delay, first } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { ForecastService } from '@core/services/forecast.service';
+import { FetchCities, SetCity, SetCurrentDay } from './store/forecast/forecast.actions';
+import { ICity } from '@core/constants/interfaces/forecast';
+import { ForecastState } from './store/forecast/forecast.state';
 export interface IAppointment {
   id?: number;
   date: moment.Moment;
@@ -24,44 +27,63 @@ export class HomeComponent implements OnInit, OnDestroy {
   public selected: moment.Moment;
   public appointments$: Observable<IAppointment[]>;
   public selectedAppointment: IAppointment;
-
+  public cities: ICity[] = [];
   private destroy: Subject<boolean> = new Subject<boolean>();
 
-  constructor(public store: Store, private cdr: ChangeDetectorRef) {}
+  constructor(
+    public store: Store,
+    private cdr: ChangeDetectorRef,
+    private forecastService: ForecastService
+  ) {}
 
   ngOnInit() {
+    this.forecastService.getLocations().subscribe((loc) => {
+      console.log(loc);
+      this.forecastService.getWeatherPrediction(loc[0].coord).subscribe((forecast) => {
+        console.log(forecast);
+      });
+    });
     this.store
       .select(HomesState.GetSelectedDate)
       .subscribe((date: moment.Moment) => (this.selected = date));
+
+    this.store.dispatch(new FetchCities());
+    this.store.select(ForecastState.GetCities).subscribe((cities) => (this.cities = cities));
+    this.store.select(ForecastState.GetDayForecast)
+      .pipe().subscribe(x=>{console.log(x)})
+  }
+
+  public cityChanged(city:ICity):void{
+    this.store.dispatch(new SetCity(city))
   }
 
   public calendarDaySelected(date): void {
     this.store.dispatch(new SelectDate(date));
+    this.store.dispatch(new SetCurrentDay(date))
+    
   }
 
   public appointmentCreated(appointment: IAppointment) {
-    
-    if(!!appointment.id){
+    if (!!appointment.id) {
       // updates
-      
-      this.store.dispatch(new UpdateAppointment(appointment));
 
-    }else{
+      this.store.dispatch(new UpdateAppointment(appointment));
+    } else {
       //creates
       this.store.dispatch(new AddAppointment(appointment));
-
     }
     console.log(appointment);
   }
 
   public calendarAppointmentSelected(appointment: IAppointment) {
-    console.log(appointment)
+    console.log(appointment);
     this.store.dispatch(new SelectDate(appointment.date));
+    this.store.dispatch(new SetCurrentDay(appointment.date))
     this.selectedAppointment = appointment;
   }
 
   public calendarMonthChanged(date): void {
-    this.destroy.next(true);
+    // this.destroy.next(true);
     const keys = moment(date).format('YYYY-MM').split('-');
     this.appointments$ = this.store.select(HomesState.findMonthAppointments).pipe(
       takeUntil(this.destroy),
