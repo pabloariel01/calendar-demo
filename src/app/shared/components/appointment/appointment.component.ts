@@ -113,7 +113,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
       this.reminderForm.reset();
     } else {
       //TODO: change and remove alert
-      alert('errors');
+      return false
     }
   }
 }
