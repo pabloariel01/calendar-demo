@@ -17,4 +17,14 @@ export class SetCurrentDay {
 
 export class FetchCities {
   static readonly type = '[Weather] fetchCities';
+
+}
+export class Complete {
+  static readonly type = '[Weather] complete';
+
+}
+export class SetImage {
+  static readonly type = '[Weather] setImage';
+  constructor(public image: string) {}
+  
 }

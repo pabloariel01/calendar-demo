@@ -16,7 +16,7 @@ export interface IForecast {
   daily: IDaily[];
 }
 
-interface IDaily {
+export interface IDaily {
   dt: number;
   temp: number;
   weather: IWeather[];
