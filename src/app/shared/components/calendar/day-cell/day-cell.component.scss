@@ -1,23 +1,32 @@
+$colors: (
+ selected:#7ed321,
+ offGrid:#cccccc,
+ today:#f1951c,
+ weekend:#2942ce
+);
+
+
 .calendar {
   &__number {
-    background-color: blue;
-    color: white;
-    font-weight: bold;
     font-size: 12px;
   }
 }
-.today {
-  color: orange;
-}
 
 .offMonth {
-  color: gray;
+  color: map-get($colors , offGrid );
 }
 
 .weekend {
-  color: blue;
+  color: map-get($colors , weekend );
+}
+
+.today {
+  color: map-get($colors , today ) ;
 }
 
 .selected {
-  background-color: blue;
+  background-color: map-get($colors , selected );
+}
+mat-card{
+  box-shadow:0 0 0 0;
 }

@@ -1,7 +1,17 @@
 .calendar {
-  &__number {
-    font-size: 10px;
-    text-align: left;
+  &__table{
+
+    &__header {
+      &__day-name {
+        background-color: #3521eb;
+        color: white;
+        font-weight: bold;
+        font-size: 12px;
+      }
+    }
+    &__date{
+      vertical-align: top;
+    }
   }
 }
 
@@ -9,12 +19,13 @@ table,
 th,
 td {
   border: 1px solid black;
+  box-shadow: 0 0 0 0;
 }
 th {
   height: 20px;
 }
 td {
-  padding: 15px;
+  // padding: 15px;
 }
 
 th {
@@ -27,20 +38,4 @@ table {
   width: 100%;
   table-layout: fixed;
   overflow-wrap: break-word;
-}
-
-.today {
-  background-color: orange;
-}
-
-.offMonth {
-  background-color: gray;
-}
-
-.weekend {
-  background-color: green;
-}
-
-.selected {
-  background-color: blue;
 }

@@ -1,14 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CalendarComponent } from './calendar.component';
-import { DateGridComponent } from './date-grid/date-grid.component';
-import { EventComponent } from './event/event.component';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { DayCellComponent } from './day-cell/day-cell.component';
-
+import { AngularMaterialModule } from '@shared/material/material.module';
+import { AppointmentCellComponent } from './appointment-cell/appointment-cell.component';
 @NgModule({
-  declarations: [CalendarComponent, DateGridComponent, EventComponent, DayCellComponent],
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  declarations: [CalendarComponent,  DayCellComponent, AppointmentCellComponent],
+  imports: [CommonModule, AngularMaterialModule],
   exports: [CalendarComponent]
 })
 export class CalendarModule {}

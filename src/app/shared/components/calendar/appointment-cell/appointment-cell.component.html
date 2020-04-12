@@ -1,0 +1,11 @@
+<!-- <span class="appointments"> appointment:{{ appointment.reminder }}</span> -->
+<mat-chip-list>
+  <mat-chip 
+  [style.backgroundColor]="appointment.color" 
+  *ngFor="let appointment of appointments"
+  (click)="pillSelected($event,appointment)"
+  >{{
+    appointment.reminder 
+    
+  }}</mat-chip>
+</mat-chip-list>

@@ -19,7 +19,7 @@ export interface ICalendarCell<T> {
   isSelected?: boolean;
   isToday?: boolean;
   isDisabled?: boolean; //future implementation
-  apointments?: T[];
+  appointments?: T[];
   classNames?: ICellClasses;
 }
 
@@ -45,16 +45,17 @@ export class CalendarComponent implements OnInit {
 
   @Input() public selected;
   @Input() public appointments$: Observable<IAppointment[]>;
-  @Output() public daySelected: EventEmitter<moment.Moment> = new EventEmitter();
 
-  //Todo: update when interface is created
-  @Output() public appointmentSelected: EventEmitter<any> = new EventEmitter();
+  @Output() public daySelected: EventEmitter<moment.Moment> = new EventEmitter();  
+  @Output() public appointmentSelected: EventEmitter<IAppointment> = new EventEmitter();
   @Output() public monthChanged: EventEmitter<moment.Moment> = new EventEmitter();
+
 
   private localeData = moment.localeData();
   private destroy: Subject<boolean> = new Subject<boolean>();
   y;
   constructor() {}
+
 
   ngOnInit() {
     this.days = this.localeData.weekdays();
@@ -111,7 +112,7 @@ export class CalendarComponent implements OnInit {
           today: this.isToday(newDate),
           isSelected: this.isSelected(newDate),
           date: newDate,
-          apointments: this.hasAppointments(newDate),
+          appointments: this.hasAppointments(newDate),
           classNames: {
             weekend: this.isWeekend(newDate) && !isOffMonth,
             offMonth: isOffMonth,
@@ -122,10 +123,7 @@ export class CalendarComponent implements OnInit {
       });
   }
 
-  //TODO: figure out how to add appointments
-  // private hasAppointment(date: moment.Moment): any[] {
-
-  // }
+ 
   private hasAppointments(date: moment.Moment): IAppointment[] {
     const day = moment(date).format('DD');
     let todayAppoinments: IAppointment[] = this.monthlyAppointments[day];
@@ -169,6 +167,10 @@ export class CalendarComponent implements OnInit {
     this.selectedDate = moment(date.date).format('DD/MM/YYYY');
     this.daySelected.emit(date.date);
     this.renderCalendar();
+  }
+
+  public selectAppointment(appointment:IAppointment):void{
+    this.appointmentSelected.emit(appointment);
   }
 
   ngOnDestroy() {

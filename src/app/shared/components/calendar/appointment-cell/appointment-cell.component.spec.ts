@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DateGridComponent } from './date-grid.component';
+import { AppointmentCellComponent } from './appointment-cell.component';
 
-describe('DateGridComponent', () => {
-  let component: DateGridComponent;
-  let fixture: ComponentFixture<DateGridComponent>;
+describe('AppointmentCellComponent', () => {
+  let component: AppointmentCellComponent;
+  let fixture: ComponentFixture<AppointmentCellComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DateGridComponent ]
+      declarations: [ AppointmentCellComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DateGridComponent);
+    fixture = TestBed.createComponent(AppointmentCellComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

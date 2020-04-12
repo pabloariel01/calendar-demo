@@ -2,7 +2,7 @@
   <!-- <div class="calendar__input-wrapper" (click)="show = !show">
     <input readonly class="calendar__input" [(ngModel)]="selectedDate" />
   </div> -->
-  <div class="calendar" #calendar>
+  <div class="calendar" >
     <div class="calendar__navs">
       <div class="calendar__month-nav">
         <button class="calendar__nav-btn" (click)="prevMonth()">&lt;</button>
@@ -17,20 +17,17 @@
     </div>
     <!-- separate here into components -->
 
-    <table class="col s12">
-      <tr>
-        <th class="calendar__day-name" *ngFor="let name of days">
+    <table class="calendar__table col s12">
+      <tr class="calendar__table__header">
+        <th class="calendar__table__header__day-name" *ngFor="let name of days">
           {{ name }}
         </th>
       </tr>
 
-      <tr class="calendar__week" *ngFor="let week of weeks">
+      <tr class="calendar__table__week" *ngFor="let week of weeks">
         <ng-container *ngFor="let day of week">
-          <td class="calendar__date" [ngClass]="day.classNames" (click)="selectDate(day)">
-            <span class="calendar__number">{{ day.date.date() }}</span>
-            <!-- replace component here -->
-            <span class="appointments"> appointment</span>
-            <!-- replace component here -->
+          <td class="calendar__table__date" (click)="selectDate(day)">
+            <app-day-cell (selectAppointment)="selectAppointment($event)" [day]="day"></app-day-cell>
           </td>
         </ng-container>
       </tr>
