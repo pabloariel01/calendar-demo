@@ -6,21 +6,15 @@ import { IDaily } from '@core/constants/interfaces/forecast';
   templateUrl: './forecast-viewer.component.html',
   styleUrls: ['./forecast-viewer.component.scss']
 })
-export class ForecastViewerComponent implements OnInit,OnChanges {
-@Input() public dayForecast:IDaily
-@Input() public icon:string
-  constructor() { }
+export class ForecastViewerComponent  {
+@Input() public dayForecast:IDaily;
+@Input() public icon:string;
+private kelvin:number=273.15;
 
-  ngOnInit() {
-    
-  }
-  ngOnChanges(){
-    console.log(this.icon);
 
-  }
   
   public convertToCelcius(temp){
-    return temp - 273.15
+    return temp - this.kelvin;
   }
 
 }
