@@ -1,9 +1,3 @@
-Manage Reminder
-
-<div *ngIf="selectedDate">
-  <p>selectedDate date:{{ selectedDate }}</p>
-</div>
-
 <form [formGroup]="reminderForm" (ngSubmit)="submitForm()" novalidate>
   <mat-card class="shipping-card">
     <mat-card-header>
@@ -47,6 +41,7 @@ Manage Reminder
           </mat-form-field>
         </div>
       </div>
+      <!-- todo: fix ie11 support issue -->
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
@@ -54,12 +49,16 @@ Manage Reminder
           </mat-form-field>
         </div>
       </div>
-
-      <div class="row">
+      <!-- todo: remove inline style -->
+      <div class="row" style="margin-bottom: 25px;">
         <div class="col">
-          <mat-form-field class="full-width">
-            <input matInput type="time" formControlName="appointmentTime" placeholder="Time" />
-          </mat-form-field>
+          <label for="time-picker">Time</label>
+          <ngx-timepicker-field
+            id="time-picker"
+            placeholder="Time"
+            [format]="24"
+            formControlName="appointmentTime"
+          ></ngx-timepicker-field>
         </div>
       </div>
 
@@ -75,11 +74,12 @@ Manage Reminder
       </div>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-raised-button color="primary" type="submit">Submit</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="!canSave()">
+        Submit
+      </button>
+      <button mat-raised-button color="primary" (click)="(removeAppointment)" disabled="!canRemove">
+        Remove
+      </button>
     </mat-card-actions>
-    <!-- Submit -->
-    <div class="button-wrapper">
-      <button mat-flat-button color="primary" type="submit">Submit</button>
-    </div>
   </mat-card>
 </form>
