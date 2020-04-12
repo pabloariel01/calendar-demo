@@ -1,5 +1,17 @@
-import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  EventEmitter,
+  Output,
+  Input,
+  OnChanges,
+  SimpleChanges
+} from '@angular/core';
 import * as moment from 'moment';
+import { IAppointment } from '@home/home.component';
+import { isNull } from 'util';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 //move to interfaces
 export interface ICalendarCell<T> {
@@ -28,30 +40,40 @@ export class CalendarComponent implements OnInit {
 
   public days: string[];
   public weeks: Array<ICalendarCell<any>[]> = [];
-  public selectedDate;
+  public selectedDate: string;
+  public monthlyAppointments: IAppointment[] = [];
 
   @Input() public selected;
-
+  @Input() public appointments$: Observable<IAppointment[]>;
   @Output() public daySelected: EventEmitter<moment.Moment> = new EventEmitter();
 
   //Todo: update when interface is created
   @Output() public appointmentSelected: EventEmitter<any> = new EventEmitter();
+  @Output() public monthChanged: EventEmitter<moment.Moment> = new EventEmitter();
 
   private localeData = moment.localeData();
-
+  private destroy: Subject<boolean> = new Subject<boolean>();
+  y;
   constructor() {}
 
   ngOnInit() {
     this.days = this.localeData.weekdays();
     this.today = moment();
     this.selectedDate = moment(this.today).format('DD/MM/YYYY');
+    this.monthChanged.emit(this.today);
 
-    this.renderCalendar();
+    this.appointments$.pipe(takeUntil(this.destroy)).subscribe((appointments) => {
+      this.monthlyAppointments = appointments;
+      this.renderCalendar();
+    });
   }
 
   private renderCalendar(): void {
     //transforms plain array to array of weeks
     const dates = this.draw(this.today);
+
+    //get appointments
+
     this.transformIntoWeeks(dates);
   }
 
@@ -84,10 +106,12 @@ export class CalendarComponent implements OnInit {
         const newDate = moment(firstDayOfGrid).date(date);
         const isOffMonth = this.isOffMonth(newDate);
         // refactor
+
         return {
           today: this.isToday(newDate),
           isSelected: this.isSelected(newDate),
           date: newDate,
+          apointments: this.hasAppointments(newDate),
           classNames: {
             weekend: this.isWeekend(newDate) && !isOffMonth,
             offMonth: isOffMonth,
@@ -102,6 +126,14 @@ export class CalendarComponent implements OnInit {
   // private hasAppointment(date: moment.Moment): any[] {
 
   // }
+  private hasAppointments(date: moment.Moment): IAppointment[] {
+    const day = moment(date).format('DD');
+    let todayAppoinments: IAppointment[] = this.monthlyAppointments[day];
+    if (!todayAppoinments) return [];
+    todayAppoinments.sort((a, b) => a.date.valueOf() - b.date.valueOf());
+
+    return todayAppoinments;
+  }
 
   private isOffMonth(date: moment.Moment): boolean {
     return this.localeData.months(date) !== this.today.format('MMMM');
@@ -123,11 +155,13 @@ export class CalendarComponent implements OnInit {
 
   public prevMonth(): void {
     this.today = moment(this.today).subtract(1, 'months');
+    this.monthChanged.emit(this.today);
     this.renderCalendar();
   }
 
   public nextMonth(): void {
     this.today = moment(this.today).add(1, 'months');
+    this.monthChanged.emit(this.today);
     this.renderCalendar();
   }
 
@@ -135,5 +169,10 @@ export class CalendarComponent implements OnInit {
     this.selectedDate = moment(date.date).format('DD/MM/YYYY');
     this.daySelected.emit(date.date);
     this.renderCalendar();
+  }
+
+  ngOnDestroy() {
+    this.destroy.next(true);
+    this.destroy.unsubscribe();
   }
 }
