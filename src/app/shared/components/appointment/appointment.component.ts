@@ -13,8 +13,10 @@ import * as moment from 'moment';
 export class AppointmentComponent implements OnInit, OnChanges {
   //TODO: needs to recieve a ICallcell in order to update
   // @Input() public selectedDate: ICalendarCell<IAppointment>;
+  @Input() public selectedAppointment: IAppointment;
   @Input() public selectedDate: moment.Moment;
   @Output() public appointmentCreated: EventEmitter<IAppointment> = new EventEmitter();
+  @Output() public appointmentRemoved: EventEmitter<IAppointment> = new EventEmitter();
   public reminderForm: FormGroup;
 
   constructor(public fb: FormBuilder) {}
@@ -26,18 +28,24 @@ export class AppointmentComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-    if (this.reminderForm && this.selectedDate) {
+    
+    if (this.reminderForm && this.selectedDate && !this.selectedAppointment) {
       this.reminderForm.patchValue({ appointmentDate: this.selectedDate.toISOString() });
+    } else if (this.selectedAppointment) {
+      this.fillEvent();
     }
   }
 
-  initForm() {
+
+
+  private initForm(): void {
     this.reminderForm = this.fb.group({
-      reminder: ['', [Validators.required, Validators.maxLength(10)]],
+      reminder: ['', [Validators.required, Validators.maxLength(30)]],
       appointmentDate: [moment(this.selectedDate).toISOString(), [Validators.required]],
       appointmentTime: ['', [Validators.required]],
       appointmentColor: ['', [Validators.required]],
-      city: ['']
+      id:[''],
+      city: [''],
     });
   }
 
@@ -53,6 +61,32 @@ export class AppointmentComponent implements OnInit, OnChanges {
     });
   }
 
+  private fillEvent(): void {
+    const appoint = this.selectedAppointment;
+    this.reminderForm.reset();
+    const date = moment(appoint.date).toISOString();
+    const time = moment(appoint.date).format('HH:mm');
+    this.reminderForm.patchValue({
+      reminder: appoint.reminder,
+      appointmentDate: date,
+      appointmentTime: time,
+      appointmentColor: appoint.color,
+      city: appoint.cityId,
+      id:appoint.id
+    });
+  }
+
+  public canSave(): boolean {
+    return this.reminderForm.valid && this.reminderForm.dirty;
+  }
+
+  //todo: add remove
+  public removeAppointment() {
+    this.reminderForm.reset();
+    this.appointmentRemoved.emit();
+  }
+  public canRemove() {}
+
   submitForm() {
     // console.log(this.reminderForm.value);
     let appointmetMoment =
@@ -63,14 +97,16 @@ export class AppointmentComponent implements OnInit, OnChanges {
     // console.log(moment(appointmetMoment));
 
     //todo: fix city , change to factory
-    console.log(this.reminderForm.valid, this.reminderForm.dirty);
     if (this.reminderForm.valid && this.reminderForm.dirty) {
       this.appointmentCreated.emit({
         date: moment(appointmetMoment),
         cityId: 0,
         reminder: this.reminderForm.value.reminder,
-        color: this.reminderForm.value.appointmentColor
+        color: this.reminderForm.value.appointmentColor,
+        id:this.reminderForm.value.id
+
       });
+      this.reminderForm.reset();
     } else {
       //TODO: change and remove alert
       alert('errors');
