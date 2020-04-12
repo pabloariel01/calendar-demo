@@ -1,5 +1,5 @@
 import { State, Action, StateContext, createSelector, Selector } from '@ngxs/store';
-import { AddAppointment, SelectDate } from './home.actions';
+import { AddAppointment, SelectDate, UpdateAppointment } from './home.actions';
 import { initialState, ICalendarState } from './interfaces/calendar-structure';
 import { AppointmentService } from '@core/services/appointment.service';
 
@@ -15,12 +15,6 @@ import { IAppointment } from '@home/home.component';
 export class HomesState {
   constructor(private appointmentService: AppointmentService) {}
 
-  // static findMonthAppointments(year: number, month: number) {
-  //   return createSelector([HomesState], (state: ICalendarState) => {
-  //     const events = _.get(state, `${[year]}.${[month]}`, null);
-  //     return !!events ? events : [];
-  //   });
-  // }
   @Selector()
   static findMonthAppointments(state: ICalendarState) {
     return (year: string, month: string) => {
@@ -68,7 +62,6 @@ export class HomesState {
     this.appointmentService
       .createAppointment(appointment, appointmentNmbr)
       .subscribe((newAppointment) => {
-        console.log({ appointment, newAppointment, state, position, events });
         if (isNull(events)) {
           _.set(state.years, `${[position[0]]}.${[position[1]]}.${[position[2]].toString()}`, [
             newAppointment
@@ -85,5 +78,31 @@ export class HomesState {
         patchState({ years: state.years });
         patchState({ appointmentNmbr: appointmentNmbr + 1 });
       });
+  }
+
+  @Action(UpdateAppointment)
+  updateEvent(
+    { patchState, getState }: StateContext<ICalendarState>,
+    { appointment }: UpdateAppointment
+  ) {
+    const state: ICalendarState = getState();
+
+    const position = moment(appointment.date).format('YYYY-MM-DD').split('-');
+
+    let appointments = _.get(
+      state.years,
+      `${[position[0]]}.${[position[1]]}.${[position[2]]}`,
+      null
+    );
+    
+    appointments = appointments.filter((appointments) => appointments.id !== appointment.id);
+    appointments.push(appointment);
+    _.set(
+      state.years,
+      `${[position[0]]}.${[position[1]]}.${[position[2]].toString()}`,
+      appointments
+    );
+
+    patchState({ years: state.years });
   }
 }

@@ -4,7 +4,7 @@ import { ICalendarCell } from 'src/app/shared/components/calendar/calendar.compo
 import * as moment from 'moment';
 import { Store, Select } from '@ngxs/store';
 import { HomesState } from './store/home.state';
-import { SelectDate, AddAppointment } from './store/home.actions';
+import { SelectDate, AddAppointment, UpdateAppointment } from './store/home.actions';
 import { map, takeUntil, delay } from 'rxjs/operators';
 import { Observable, Subscription, Subject } from 'rxjs';
 export interface IAppointment {
@@ -23,7 +23,7 @@ export interface IAppointment {
 export class HomeComponent implements OnInit, OnDestroy {
   public selected: moment.Moment;
   public appointments$: Observable<IAppointment[]>;
-  public monthlyAppointments;
+  public selectedAppointment: IAppointment;
 
   private destroy: Subject<boolean> = new Subject<boolean>();
 
@@ -35,17 +35,32 @@ export class HomeComponent implements OnInit, OnDestroy {
       .subscribe((date: moment.Moment) => (this.selected = date));
   }
 
-  public DaySelected(date): void {
+  public calendarDaySelected(date): void {
     this.store.dispatch(new SelectDate(date));
-    //this.selected = date;
   }
 
   public appointmentCreated(appointment: IAppointment) {
-    this.store.dispatch(new AddAppointment(appointment));
+    
+    if(!!appointment.id){
+      // updates
+      
+      this.store.dispatch(new UpdateAppointment(appointment));
+
+    }else{
+      //creates
+      this.store.dispatch(new AddAppointment(appointment));
+
+    }
     console.log(appointment);
   }
 
-  public monthChanged(date): void {
+  public calendarAppointmentSelected(appointment: IAppointment) {
+    console.log(appointment)
+    this.store.dispatch(new SelectDate(appointment.date));
+    this.selectedAppointment = appointment;
+  }
+
+  public calendarMonthChanged(date): void {
     this.destroy.next(true);
     const keys = moment(date).format('YYYY-MM').split('-');
     this.appointments$ = this.store.select(HomesState.findMonthAppointments).pipe(

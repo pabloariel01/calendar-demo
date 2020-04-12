@@ -1,5 +1,10 @@
 <h1>Event Manager</h1>
-<app-calendar (daySelected)="DaySelected($event)"></app-calendar>
+<app-calendar
+  [appointments$]="appointments$"
+  (daySelected)="calendarDaySelected($event)"
+  (monthChanged)="calendarMonthChanged($event)"
+  (appointmentSelected)="calendarAppointmentSelected($event)"
+></app-calendar>
 <!-- <app-day-schedule></app-day-schedule> -->
-<app-appointment [selectedDate]="selected" (appointmentCreated)="appointmentCreated($event)">
+<app-appointment [selectedDate]="selected" [selectedAppointment]="selectedAppointment" (appointmentCreated)="appointmentCreated($event)">
 </app-appointment>
