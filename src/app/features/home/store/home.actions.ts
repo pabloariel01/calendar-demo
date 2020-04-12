@@ -6,7 +6,7 @@ export class SelectDate {
   constructor(public date: moment.Moment) {}
 }
 
-export class AddEvent {
-  static readonly type = '[Home] addEvent';
+export class AddAppointment {
+  static readonly type = '[Home] addAppointment';
   constructor(public appointment: IAppointment) {}
 }

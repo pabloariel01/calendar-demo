@@ -1,19 +1,41 @@
-import { State, Action, StateContext, createSelector, Select, Selector } from '@ngxs/store';
-import { AddEvent, SelectDate } from './home.actions';
-import { ICalendarState, initialState } from './interfaces/calendar-structure';
+import { State, Action, StateContext, createSelector, Selector } from '@ngxs/store';
+import { AddAppointment, SelectDate } from './home.actions';
+import { initialState, ICalendarState } from './interfaces/calendar-structure';
+import { AppointmentService } from '@core/services/appointment.service';
+
 import * as moment from 'moment';
+import * as _ from 'lodash';
+import { isNull } from 'util';
+import { IAppointment } from '@home/home.component';
 
 @State<ICalendarState>({
   name: 'home',
   defaults: initialState
 })
 export class HomesState {
-  static findAppointments(year: number, month: number) {
+  constructor(private appointmentService: AppointmentService) {}
+
+  // static findMonthAppointments(year: number, month: number) {
+  //   return createSelector([HomesState], (state: ICalendarState) => {
+  //     const events = _.get(state, `${[year]}.${[month]}`, null);
+  //     return !!events ? events : [];
+  //   });
+  // }
+  @Selector()
+  static findMonthAppointments(state: ICalendarState) {
+    return (year: string, month: string) => {
+      const events = _.get(state.years, `${[year]}.${[month]}`, null);
+      return !!events ? events : [];
+    };
+  }
+
+  static findAppointmentInDay(year: number, month: number, day: number, id: number) {
     return createSelector([HomesState], (state: ICalendarState) => {
-      const events = state.years
-        .filter((yrs) => yrs.id === year)
-        .filter((months) => months.id === month);
-      return events.length > 0 ? events : [];
+      const events: IAppointment[] = _.get(state, `${[year]}.${[month]}.${[day]}`, []);
+      if (events.length) {
+        return events.find((evt: IAppointment) => evt.id == id);
+      }
+      return null;
     });
   }
 
@@ -31,10 +53,37 @@ export class HomesState {
     return state;
   }
 
-  @Action(AddEvent)
-  addEvent({ patchState, getState }: StateContext<ICalendarState>, { appointment }: AddEvent) {
+  @Action(AddAppointment)
+  addEvent(
+    { patchState, getState }: StateContext<ICalendarState>,
+    { appointment }: AddAppointment
+  ) {
     const state: ICalendarState = getState();
+    const appointmentNmbr = state.appointmentNmbr ? state.appointmentNmbr : 0;
 
-    console.log({ appointment, state });
+    const position = moment(appointment.date).format('YYYY-MM-DD').split('-');
+
+    let events = _.get(state.years, `${[position[0]]}.${[position[1]]}.${[position[2]]}`, null);
+
+    this.appointmentService
+      .createAppointment(appointment, appointmentNmbr)
+      .subscribe((newAppointment) => {
+        console.log({ appointment, newAppointment, state, position, events });
+        if (isNull(events)) {
+          _.set(state.years, `${[position[0]]}.${[position[1]]}.${[position[2]].toString()}`, [
+            newAppointment
+          ]);
+        } else {
+          console.log(events);
+          events.push(newAppointment);
+          _.set(
+            state.years,
+            `${[position[0]]}.${[position[1]]}.${[position[2]].toString()}`,
+            events
+          );
+        }
+        patchState({ years: state.years });
+        patchState({ appointmentNmbr: appointmentNmbr + 1 });
+      });
   }
 }

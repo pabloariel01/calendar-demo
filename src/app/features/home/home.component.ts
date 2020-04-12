@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { ICalendarCell } from 'src/app/shared/components/calendar/calendar.component';
 
 import * as moment from 'moment';
-import { Store } from '@ngxs/store';
+import { Store, Select } from '@ngxs/store';
 import { HomesState } from './store/home.state';
-import { SelectDate } from './store/home.actions';
+import { SelectDate, AddAppointment } from './store/home.actions';
+import { map, takeUntil, delay } from 'rxjs/operators';
+import { Observable, Subscription, Subject } from 'rxjs';
 export interface IAppointment {
   id?: number;
   date: moment.Moment;
@@ -18,9 +20,14 @@ export interface IAppointment {
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   public selected: moment.Moment;
-  constructor(public store: Store) {}
+  public appointments$: Observable<IAppointment[]>;
+  public monthlyAppointments;
+
+  private destroy: Subject<boolean> = new Subject<boolean>();
+
+  constructor(public store: Store, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.store
@@ -33,7 +40,24 @@ export class HomeComponent implements OnInit {
     //this.selected = date;
   }
 
-  public appointmentCreated(appointment) {
+  public appointmentCreated(appointment: IAppointment) {
+    this.store.dispatch(new AddAppointment(appointment));
     console.log(appointment);
+  }
+
+  public monthChanged(date): void {
+    this.destroy.next(true);
+    const keys = moment(date).format('YYYY-MM').split('-');
+    this.appointments$ = this.store.select(HomesState.findMonthAppointments).pipe(
+      takeUntil(this.destroy),
+      delay(0),
+      map((filterFn) => filterFn(keys[0], keys[1]))
+    );
+    this.cdr.detectChanges();
+  }
+
+  ngOnDestroy() {
+    this.destroy.next(true);
+    this.destroy.unsubscribe();
   }
 }
