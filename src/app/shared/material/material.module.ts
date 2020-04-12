@@ -20,47 +20,34 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 
+//externals
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+
+const modules = [
+  CommonModule,
+  MatButtonModule,
+  MatToolbarModule,
+  MatIconModule,
+  MatSidenavModule,
+  MatBadgeModule,
+  MatListModule,
+  MatGridListModule,
+  MatFormFieldModule,
+  MatInputModule,
+  MatSelectModule,
+  MatRadioModule,
+  MatDatepickerModule,
+  MatNativeDateModule,
+  MatChipsModule,
+  MatTooltipModule,
+  MatTableModule,
+  MatPaginatorModule,
+  MatCardModule,
+  NgxMaterialTimepickerModule
+];
 @NgModule({
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatSidenavModule,
-    MatBadgeModule,
-    MatListModule,
-    MatGridListModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatRadioModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatChipsModule,
-    MatTooltipModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatCardModule
-  ],
-  exports: [
-    MatButtonModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatSidenavModule,
-    MatBadgeModule,
-    MatListModule,
-    MatGridListModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatRadioModule,
-    MatDatepickerModule,
-    MatChipsModule,
-    MatTooltipModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatCardModule
-  ],
+  imports: modules,
+  exports: modules,
   providers: [MatDatepickerModule]
 })
 export class AngularMaterialModule {}
