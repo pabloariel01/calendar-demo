@@ -5,15 +5,13 @@
   (monthChanged)="calendarMonthChanged($event)"
   (appointmentSelected)="calendarAppointmentSelected($event)"
 ></app-calendar>
-<!-- <app-day-schedule></app-day-schedule> -->
 <app-appointment
   [selectedDate]="selected"
-  [cities]="cities"
-  
+  [cities]="cities"  
   [selectedAppointment]="selectedAppointment"
   (appointmentCreated)="appointmentCreated($event)"
   (cityChanged)="cityChanged($event)"
-
+  (appointmentRemoved)="appointmentRemoved($event)"
 >
 <app-forecast-viewer [dayForecast]="dayForecast" [icon]="forecastIcon"></app-forecast-viewer>
 </app-appointment>

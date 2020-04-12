@@ -81,7 +81,7 @@
       <button mat-raised-button color="primary" type="submit" [disabled]="!canSave()">
         Submit
       </button>
-      <button mat-raised-button color="primary" (click)="(removeAppointment)" disabled="!canRemove">
+      <button mat-raised-button color="primary" (click)="removeAppointment()" [disabled]="!canRemove()">
         Remove
       </button>
     </mat-card-actions>

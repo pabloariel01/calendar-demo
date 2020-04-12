@@ -3,8 +3,8 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import * as moment from 'moment';
 import { Store } from '@ngxs/store';
 import { HomesState } from './store/calendar/home.state';
-import { SelectDate, AddAppointment, UpdateAppointment } from './store/calendar/home.actions';
-import { map, takeUntil, delay, first } from 'rxjs/operators';
+import { SelectDate, AddAppointment, UpdateAppointment,DeleteAppointment } from './store/calendar/home.actions';
+import { map, takeUntil, delay } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
 import { ForecastService } from '@core/services/forecast.service';
 import { FetchCities, SetCity, SetCurrentDay, SetImage } from './store/forecast/forecast.actions';
@@ -65,10 +65,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.store.dispatch(new SetCity(city));
   }
 
-  public calendarDaySelected(date): void {
-    this.store.dispatch(new SelectDate(date));
-    this.store.dispatch(new SetCurrentDay(date));
-  }
+
 
   public appointmentCreated(appointment: IAppointment) {
     if (!!appointment.id) {
@@ -78,8 +75,17 @@ export class HomeComponent implements OnInit, OnDestroy {
     } else {
       //creates
       this.store.dispatch(new AddAppointment(appointment));
-    }
-  
+    }  
+  }
+
+  public appointmentRemoved(appointment:IAppointment):void{
+    this.store.dispatch(new DeleteAppointment(appointment))
+  }
+
+  public calendarDaySelected(date): void {
+    this.store.dispatch(new SelectDate(date));
+    this.store.dispatch(new SetCurrentDay(date));
+    this.selectedAppointment=null;
   }
 
   public calendarAppointmentSelected(appointment: IAppointment) {

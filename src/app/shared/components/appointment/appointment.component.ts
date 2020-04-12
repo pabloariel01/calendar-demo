@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, OnChanges, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, OnChanges, EventEmitter, SimpleChanges } from '@angular/core';
 import { ICalendarCell } from '../calendar/calendar.component';
 import { IAppointment } from 'src/app/features/home/home.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -29,8 +29,8 @@ export class AppointmentComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-    
     if (this.reminderForm && this.selectedDate && !this.selectedAppointment) {
+      this.reminderForm.reset();
       this.reminderForm.patchValue({ appointmentDate: this.selectedDate.toISOString() });
     } else if (this.selectedAppointment) {
       this.fillEvent();
@@ -54,7 +54,6 @@ export class AppointmentComponent implements OnInit, OnChanges {
 
   public setDate(e): void {
     const parsedDate = new Date(e.target.value).toISOString().substring(0, 10);
-    console.log(parsedDate);
     this.reminderForm.get('appointmentDate').setValue(parsedDate, {
       onlyself: true
     });
@@ -79,10 +78,11 @@ export class AppointmentComponent implements OnInit, OnChanges {
     return this.reminderForm.valid && this.reminderForm.dirty;
   }
 
-  //todo: add remove
+ 
   public removeAppointment() {
-    this.reminderForm.reset();
-    this.appointmentRemoved.emit();
+    // this.reminderForm.reset();
+        
+    this.appointmentRemoved.emit(this.selectedAppointment);
   }
 
   public cityCHanged(newValue): void {
@@ -90,16 +90,18 @@ export class AppointmentComponent implements OnInit, OnChanges {
     const city = this.cities.find((city) => city.id == id);
     this.cityChanged.emit(city);
   }
-  public canRemove() {}
 
-  submitForm() {
-    // console.log(this.reminderForm.value);
+  public canRemove():boolean {
+    return !!this.reminderForm.value.id;    
+  }
+
+  public submitForm() {
+
     let appointmetMoment =
       this.reminderForm.value.appointmentDate.substring(0, 10) +
       'T' +
       this.reminderForm.value.appointmentTime +
       ':00';
-    // console.log(moment(appointmetMoment));
 
     //todo: fix city , change to factory
     if (this.reminderForm.valid && this.reminderForm.dirty) {
