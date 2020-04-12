@@ -1,5 +1,5 @@
 import { State, Action, StateContext, createSelector, Selector } from '@ngxs/store';
-import { AddAppointment, SelectDate, UpdateAppointment } from './home.actions';
+import { AddAppointment, SelectDate, UpdateAppointment, DeleteAppointment } from './home.actions';
 import { initialState, ICalendarState } from './config/homeState-config';
 import { AppointmentService } from '@core/services/appointment.service';
 
@@ -53,7 +53,7 @@ export class HomesState {
     { appointment }: AddAppointment
   ) {
     const state: ICalendarState = getState();
-    const appointmentNmbr = state.appointmentNmbr ? state.appointmentNmbr : 0;
+    const appointmentNmbr = state.appointmentNmbr ? state.appointmentNmbr : 1;
 
     const position = moment(appointment.date).format('YYYY-MM-DD').split('-');
 
@@ -103,6 +103,34 @@ export class HomesState {
       appointments
     );
 
+    patchState({ years: state.years });
+  }
+
+  getAppointmentDay(state, date) {
+    const position = moment(date).format('YYYY-MM-DD').split('-');
+
+    const day = _.get(state.years, `${[position[0]]}.${[position[1]]}.${[position[2]]}`, null);
+
+    return { day, position };
+  }
+
+  @Action(DeleteAppointment)
+  deleteAppointment(
+    { patchState, getState }: StateContext<ICalendarState>,
+    { appointment }: UpdateAppointment
+  ) {
+    const state: ICalendarState = getState();
+    const result =this.getAppointmentDay(state, appointment.date);
+    let dayAppointments = result.day;
+    let position= result.position;
+    // const position = this.getAppointmentDay(state,appointment.date).position;
+    console.log(dayAppointments);
+    dayAppointments = dayAppointments.filter((appt) => appt.id != appointment.id);
+    _.set(
+      state.years,
+      `${[position[0]]}.${[position[1]]}.${[position[2]].toString()}`,
+      dayAppointments
+    );
     patchState({ years: state.years });
   }
 }
