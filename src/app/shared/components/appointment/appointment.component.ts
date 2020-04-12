@@ -4,7 +4,7 @@ import { IAppointment } from 'src/app/features/home/home.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { isNull } from 'util';
 import * as moment from 'moment';
-import { ICity } from '@core/constants/interfaces/forecast';
+import { ICity, IDaily } from '@core/constants/interfaces/forecast';
 
 @Component({
   selector: 'app-appointment',
@@ -12,18 +12,17 @@ import { ICity } from '@core/constants/interfaces/forecast';
   styleUrls: ['./appointment.component.scss']
 })
 export class AppointmentComponent implements OnInit, OnChanges {
-  //TODO: needs to recieve a ICallcell in order to update
-  // @Input() public selectedDate: ICalendarCell<IAppointment>;
-  @Input() public cities:ICity[]=[];
+  @Input() public cities: ICity[] = [];
   @Input() public selectedAppointment: IAppointment;
   @Input() public selectedDate: moment.Moment;
+
+
   @Output() public appointmentCreated: EventEmitter<IAppointment> = new EventEmitter();
   @Output() public appointmentRemoved: EventEmitter<IAppointment> = new EventEmitter();
-  @Output() public cityChanged:EventEmitter<ICity>=new EventEmitter();
+  @Output() public cityChanged: EventEmitter<ICity> = new EventEmitter();
   public reminderForm: FormGroup;
 
   constructor(public fb: FormBuilder) {}
-
 
   ngOnInit(): void {
     this.initForm();
@@ -38,16 +37,14 @@ export class AppointmentComponent implements OnInit, OnChanges {
     }
   }
 
-
-
   private initForm(): void {
     this.reminderForm = this.fb.group({
       reminder: ['', [Validators.required, Validators.maxLength(30)]],
       appointmentDate: [moment(this.selectedDate).toISOString(), [Validators.required]],
       appointmentTime: ['', [Validators.required]],
       appointmentColor: ['', [Validators.required]],
-      id:[''],
-      city: ['0',[Validators.required]],
+      id: [''],
+      city: ['0', [Validators.required]]
     });
   }
 
@@ -74,7 +71,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
       appointmentTime: time,
       appointmentColor: appoint.color,
       city: appoint.cityId,
-      id:appoint.id
+      id: appoint.id
     });
   }
 
@@ -88,10 +85,10 @@ export class AppointmentComponent implements OnInit, OnChanges {
     this.appointmentRemoved.emit();
   }
 
-  public cityCHanged(newValue):void{
-    const id=newValue.value
-    const city =this.cities.find(city=>city.id==id)
-    this.cityChanged.emit(city)
+  public cityCHanged(newValue): void {
+    const id = newValue.value;
+    const city = this.cities.find((city) => city.id == id);
+    this.cityChanged.emit(city);
   }
   public canRemove() {}
 
@@ -111,8 +108,7 @@ export class AppointmentComponent implements OnInit, OnChanges {
         cityId: 0,
         reminder: this.reminderForm.value.reminder,
         color: this.reminderForm.value.appointmentColor,
-        id:this.reminderForm.value.id
-
+        id: this.reminderForm.value.id
       });
       this.reminderForm.reset();
     } else {

@@ -9,8 +9,11 @@
 <app-appointment
   [selectedDate]="selected"
   [cities]="cities"
+  
   [selectedAppointment]="selectedAppointment"
   (appointmentCreated)="appointmentCreated($event)"
   (cityChanged)="cityChanged($event)"
+
 >
+<app-forecast-viewer [dayForecast]="dayForecast" [icon]="forecastIcon"></app-forecast-viewer>
 </app-appointment>

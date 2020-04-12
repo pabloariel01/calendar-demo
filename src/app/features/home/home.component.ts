@@ -7,8 +7,8 @@ import { SelectDate, AddAppointment, UpdateAppointment } from './store/calendar/
 import { map, takeUntil, delay, first } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
 import { ForecastService } from '@core/services/forecast.service';
-import { FetchCities, SetCity, SetCurrentDay } from './store/forecast/forecast.actions';
-import { ICity } from '@core/constants/interfaces/forecast';
+import { FetchCities, SetCity, SetCurrentDay, SetImage } from './store/forecast/forecast.actions';
+import { ICity, IDaily } from '@core/constants/interfaces/forecast';
 import { ForecastState } from './store/forecast/forecast.state';
 export interface IAppointment {
   id?: number;
@@ -28,6 +28,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   public appointments$: Observable<IAppointment[]>;
   public selectedAppointment: IAppointment;
   public cities: ICity[] = [];
+  public dayForecast: IDaily;
+  public forecastIcon: string;
+  
   private destroy: Subject<boolean> = new Subject<boolean>();
 
   constructor(
@@ -37,30 +40,35 @@ export class HomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.forecastService.getLocations().subscribe((loc) => {
-      console.log(loc);
-      this.forecastService.getWeatherPrediction(loc[0].coord).subscribe((forecast) => {
-        console.log(forecast);
-      });
-    });
     this.store
-      .select(HomesState.GetSelectedDate)
+      .select(HomesState.GetSelectedDate).pipe(takeUntil(this.destroy))
       .subscribe((date: moment.Moment) => (this.selected = date));
 
     this.store.dispatch(new FetchCities());
     this.store.select(ForecastState.GetCities).subscribe((cities) => (this.cities = cities));
-    this.store.select(ForecastState.GetDayForecast)
-      .pipe().subscribe(x=>{console.log(x)})
+    this.store
+      .select(ForecastState.GetDayForecast)
+      .pipe(takeUntil(this.destroy))
+      .subscribe((dayForecast:any) => {
+        console.log(dayForecast);
+        if(!!dayForecast.dt){
+          
+          this.dayForecast = dayForecast;
+          const icon = dayForecast.weather[0].icon;
+          this.store.dispatch(new SetImage(icon));
+        }
+      });
+    this.store.select(ForecastState.GetIcon).pipe(takeUntil(this.destroy))
+      .subscribe((icon:string)=>{this.forecastIcon=icon } );
   }
 
-  public cityChanged(city:ICity):void{
-    this.store.dispatch(new SetCity(city))
+  public cityChanged(city: ICity): void {
+    this.store.dispatch(new SetCity(city));
   }
 
   public calendarDaySelected(date): void {
     this.store.dispatch(new SelectDate(date));
-    this.store.dispatch(new SetCurrentDay(date))
-    
+    this.store.dispatch(new SetCurrentDay(date));
   }
 
   public appointmentCreated(appointment: IAppointment) {
@@ -78,7 +86,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public calendarAppointmentSelected(appointment: IAppointment) {
     console.log(appointment);
     this.store.dispatch(new SelectDate(appointment.date));
-    this.store.dispatch(new SetCurrentDay(appointment.date))
+    this.store.dispatch(new SetCurrentDay(appointment.date));
     this.selectedAppointment = appointment;
   }
 
