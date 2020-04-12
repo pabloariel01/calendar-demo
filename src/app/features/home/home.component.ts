@@ -50,14 +50,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       .select(ForecastState.GetDayForecast)
       .pipe(takeUntil(this.destroy))
       .subscribe((dayForecast:any) => {
-        console.log(dayForecast);
-        if(!!dayForecast.dt){
-          
+        if(!!dayForecast.dt){          
           this.dayForecast = dayForecast;
           const icon = dayForecast.weather[0].icon;
           this.store.dispatch(new SetImage(icon));
         }
       });
+      //todo: add wheather icon
     this.store.select(ForecastState.GetIcon).pipe(takeUntil(this.destroy))
       .subscribe((icon:string)=>{this.forecastIcon=icon } );
   }
@@ -80,11 +79,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       //creates
       this.store.dispatch(new AddAppointment(appointment));
     }
-    console.log(appointment);
+  
   }
 
   public calendarAppointmentSelected(appointment: IAppointment) {
-    console.log(appointment);
     this.store.dispatch(new SelectDate(appointment.date));
     this.store.dispatch(new SetCurrentDay(appointment.date));
     this.selectedAppointment = appointment;
