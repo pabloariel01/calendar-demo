@@ -38,6 +38,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public forecastIcon: string;
   public monthlyAppointments: IAppointment[];
   public refresh: boolean;
+  public refresh$:Observable<IAppointment[]>;
   private destroy: Subject<boolean> = new Subject<boolean>();
 
   constructor(
