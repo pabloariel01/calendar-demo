@@ -1,15 +1,19 @@
 $colors: (
- selected:#7ed321,
+ selected:#5883A2,
  offGrid:#cccccc,
  today:#f1951c,
- weekend:#2942ce
+ weekend:#5883A2
 );
 
 
 .calendar {
   &__number {
     font-size: 12px;
+    margin-left: 5px;
+
   }
+
+
 }
 
 .offMonth {
@@ -26,7 +30,17 @@ $colors: (
 
 .selected {
   background-color: map-get($colors , selected );
+  display: block;
+  color:#ffffff;
 }
 mat-card{
-  box-shadow:0 0 0 0;
+  box-shadow:0 0 0 0 !important;
+  padding:3px;
+  min-height: 100px;
+  max-height: 180px;
+  overflow:auto;
+}
+
+mat-card-title{
+  font-size: 12px;
 }

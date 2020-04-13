@@ -39,10 +39,6 @@ describe('AppointmentComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // funcion setForm(){
-
-  // }
-
   it('should check reminder  validity', () => {
     let reminder = component.reminderForm.controls.reminder;
     reminder.setValue('');

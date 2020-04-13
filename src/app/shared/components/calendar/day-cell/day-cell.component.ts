@@ -16,16 +16,13 @@ export class DayCellComponent implements OnInit {
 
   ngOnInit() {}
   public NewAppointment(event, day): void {
-    console.log(day);
     event.preventDefault();
     event.stopPropagation();
-    // this.addAppointment.emit()
   }
 
   public removeAllAppointment(event): void {
     event.preventDefault();
     event.stopPropagation();
-    // this.eraseAll.emit()
   }
 
   public appointmentSelected(id: number): void {

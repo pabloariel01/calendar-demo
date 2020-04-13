@@ -80,8 +80,6 @@ export class AppointmentComponent implements OnInit, OnChanges {
 
  
   public removeAppointment() {
-    // this.reminderForm.reset();
-        
     this.appointmentRemoved.emit(this.selectedAppointment);
   }
 
@@ -103,11 +101,11 @@ export class AppointmentComponent implements OnInit, OnChanges {
       this.reminderForm.value.appointmentTime +
       ':00';
 
-    //todo: fix city , change to factory
+    //todo:  change to factory
     if (this.reminderForm.valid && this.reminderForm.dirty) {
       this.appointmentCreated.emit({
         date: moment(appointmetMoment),
-        cityId: 0,
+        cityId: this.reminderForm.value.city,
         reminder: this.reminderForm.value.reminder,
         color: this.reminderForm.value.appointmentColor,
         id: this.reminderForm.value.id
