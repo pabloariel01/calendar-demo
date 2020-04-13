@@ -1,6 +1,7 @@
 <h1>Event Manager</h1>
 <app-calendar
-  [appointments$]="appointments$"
+  [monthlyAppointments]="monthlyAppointments"
+  [refresh]="refresh"
   (daySelected)="calendarDaySelected($event)"
   (monthChanged)="calendarMonthChanged($event)"
   (appointmentSelected)="calendarAppointmentSelected($event)"

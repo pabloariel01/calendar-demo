@@ -41,10 +41,11 @@ export class CalendarComponent implements OnInit {
   public days: string[];
   public weeks: Array<ICalendarCell<any>[]> = [];
   public selectedDate: string;
-  public monthlyAppointments: IAppointment[] = [];
 
   @Input() public selected;
   @Input() public appointments$: Observable<IAppointment[]>;
+  @Input() public monthlyAppointments:IAppointment[];
+  @Input() public refresh:boolean;
 
   @Output() public daySelected: EventEmitter<moment.Moment> = new EventEmitter();  
   @Output() public appointmentSelected: EventEmitter<IAppointment> = new EventEmitter();
@@ -62,12 +63,16 @@ export class CalendarComponent implements OnInit {
     this.today = moment();
     this.selectedDate = moment(this.today).format('DD/MM/YYYY');
     this.monthChanged.emit(this.today);
-
-    this.appointments$.pipe(takeUntil(this.destroy)).subscribe((appointments) => {
-      this.monthlyAppointments = appointments;
+    this.daySelected.emit(moment());
       this.renderCalendar();
-    });
   }
+
+  ngOnChanges(){
+    if(this.monthlyAppointments ){
+      this.renderCalendar();
+    }
+  }
+
 
   private renderCalendar(): void {
     //transforms plain array to array of weeks
@@ -126,6 +131,7 @@ export class CalendarComponent implements OnInit {
  
   private hasAppointments(date: moment.Moment): IAppointment[] {
     const day = moment(date).format('DD');
+    if(!this.monthlyAppointments) return []
     let todayAppoinments: IAppointment[] = this.monthlyAppointments[day];
     if (!todayAppoinments) return [];
     todayAppoinments.sort((a, b) => a.date.valueOf() - b.date.valueOf());

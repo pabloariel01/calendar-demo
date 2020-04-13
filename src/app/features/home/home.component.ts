@@ -3,7 +3,12 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import * as moment from 'moment';
 import { Store } from '@ngxs/store';
 import { HomesState } from './store/calendar/home.state';
-import { SelectDate, AddAppointment, UpdateAppointment,DeleteAppointment } from './store/calendar/home.actions';
+import {
+  SelectDate,
+  AddAppointment,
+  UpdateAppointment,
+  DeleteAppointment
+} from './store/calendar/home.actions';
 import { map, takeUntil, delay } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
 import { ForecastService } from '@core/services/forecast.service';
@@ -16,6 +21,7 @@ export interface IAppointment {
   cityId: number;
   reminder: string;
   color: string;
+  cityName?: string;
 }
 
 @Component({
@@ -25,12 +31,13 @@ export interface IAppointment {
 })
 export class HomeComponent implements OnInit, OnDestroy {
   public selected: moment.Moment;
-  public appointments$: Observable<IAppointment[]>;
+
   public selectedAppointment: IAppointment;
   public cities: ICity[] = [];
   public dayForecast: IDaily;
   public forecastIcon: string;
-  
+  public monthlyAppointments: IAppointment[];
+  public refresh: boolean;
   private destroy: Subject<boolean> = new Subject<boolean>();
 
   constructor(
@@ -41,7 +48,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.store
-      .select(HomesState.GetSelectedDate).pipe(takeUntil(this.destroy))
+      .select(HomesState.GetSelectedDate)
+      .pipe(takeUntil(this.destroy))
       .subscribe((date: moment.Moment) => (this.selected = date));
 
     this.store.dispatch(new FetchCities());
@@ -49,23 +57,25 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.store
       .select(ForecastState.GetDayForecast)
       .pipe(takeUntil(this.destroy))
-      .subscribe((dayForecast:any) => {
-        if(!!dayForecast.dt){          
+      .subscribe((dayForecast: any) => {
+        if (!!dayForecast.dt) {
           this.dayForecast = dayForecast;
           const icon = dayForecast.weather[0].icon;
           this.store.dispatch(new SetImage(icon));
         }
       });
-      //todo: add wheather icon
-    this.store.select(ForecastState.GetIcon).pipe(takeUntil(this.destroy))
-      .subscribe((icon:string)=>{this.forecastIcon=icon } );
+    //todo: add wheather icon
+    this.store
+      .select(ForecastState.GetIcon)
+      .pipe(takeUntil(this.destroy))
+      .subscribe((icon: string) => {
+        this.forecastIcon = icon;
+      });
   }
 
   public cityChanged(city: ICity): void {
     this.store.dispatch(new SetCity(city));
   }
-
-
 
   public appointmentCreated(appointment: IAppointment) {
     if (!!appointment.id) {
@@ -75,17 +85,19 @@ export class HomeComponent implements OnInit, OnDestroy {
     } else {
       //creates
       this.store.dispatch(new AddAppointment(appointment));
-    }  
+    }
+    this.calendarDaySelected(appointment.date);
   }
 
-  public appointmentRemoved(appointment:IAppointment):void{
-    this.store.dispatch(new DeleteAppointment(appointment))
+  public appointmentRemoved(appointment: IAppointment): void {
+    this.store.dispatch(new DeleteAppointment(appointment));
+    this.calendarDaySelected(appointment.date);
   }
 
   public calendarDaySelected(date): void {
     this.store.dispatch(new SelectDate(date));
     this.store.dispatch(new SetCurrentDay(date));
-    this.selectedAppointment=null;
+    this.selectedAppointment = null;
   }
 
   public calendarAppointmentSelected(appointment: IAppointment) {
@@ -95,13 +107,18 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   public calendarMonthChanged(date): void {
-    // this.destroy.next(true);
+    this.monthlyAppointments = null;
     const keys = moment(date).format('YYYY-MM').split('-');
-    this.appointments$ = this.store.select(HomesState.findMonthAppointments).pipe(
-      takeUntil(this.destroy),
-      delay(0),
-      map((filterFn) => filterFn(keys[0], keys[1]))
-    );
+    this.store
+      .select(HomesState.findMonthAppointments)
+      .pipe(
+        takeUntil(this.destroy),
+        delay(0),
+        map((filterFn) => filterFn(keys[0], keys[1]))
+      )
+      .subscribe((month) => {
+        this.monthlyAppointments = month;
+      });
     this.cdr.detectChanges();
   }
 

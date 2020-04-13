@@ -1,13 +1,14 @@
 <div class="calendar__wrapper">
   <div class="calendar" >
     <div class="calendar__navs">
-      <div class="calendar__month-nav">
-        <button class="calendar__nav-btn" (click)="prevMonth()">&lt;</button>
-        <span>
-          {{ today.format('MMMM').toUpperCase() }}
+
+      <div class="calendar__month-nav  col s12">
+        <button mat-button color="primary" class="calendar__nav-btn__left" (click)="prevMonth()">&lt;</button>
+        <span class="calendar__nav-name">
+          {{ today.format('MMMM') || titleCase }}
           {{ today.format('YYYY') }}
         </span>
-        <button class="calendar__nav-btn" (click)="nextMonth()">
+        <button  mat-button color="primary" class="calendar__nav-btn__right" (click)="nextMonth()">
           &gt;
         </button>
       </div>

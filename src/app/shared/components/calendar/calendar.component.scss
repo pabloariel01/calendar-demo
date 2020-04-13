@@ -1,41 +1,44 @@
 .calendar {
   &__table{
+    border-spacing:0;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    width: 100%;
+    table-layout: fixed;
+    overflow-wrap: break-word;
 
     &__header {
       &__day-name {
-        background-color: #3521eb;
+        background-color: #2F74B5;
         color: white;
-        font-weight: bold;
+        font-weight: 400;
         font-size: 12px;
       }
     }
     &__date{
       vertical-align: top;
+      max-height: calc(100vh /5);
     }
+  }
+
+  &__month-nav{
+    background-color: #65a6e4;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    text-align: center;
+    height: 25px;
   }
 }
 
 table,
 th,
 td {
-  border: 1px solid black;
+  border: 1px solid #bfbfbf;
   box-shadow: 0 0 0 0;
 }
-th {
-  height: 20px;
-}
-td {
-  // padding: 15px;
-}
+
 
 th {
   text-align: center;
 }
 
-table {
-  border-collapse: collapse;
-  border-spacing: 5px;
-  width: 100%;
-  table-layout: fixed;
-  overflow-wrap: break-word;
-}

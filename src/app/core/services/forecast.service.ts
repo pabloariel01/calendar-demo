@@ -19,6 +19,7 @@ export class ForecastService {
     return of(cities);
   }
 
+
   //Daily forecast for 7 days
   public getWeatherPrediction(coordinates: ICityCoordinates): Observable<IForecast> {
     return this.http.get<IForecast>(

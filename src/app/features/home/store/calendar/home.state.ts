@@ -67,7 +67,6 @@ export class HomesState {
             newAppointment
           ]);
         } else {
-          console.log(events);
           events.push(newAppointment);
           _.set(
             state.years,
@@ -124,7 +123,6 @@ export class HomesState {
     let dayAppointments = result.day;
     let position= result.position;
     // const position = this.getAppointmentDay(state,appointment.date).position;
-    console.log(dayAppointments);
     dayAppointments = dayAppointments.filter((appt) => appt.id != appointment.id);
     _.set(
       state.years,
