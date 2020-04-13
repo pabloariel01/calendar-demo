@@ -43,7 +43,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     public store: Store,
     private cdr: ChangeDetectorRef,
-    private forecastService: ForecastService
   ) {}
 
   ngOnInit() {
@@ -60,11 +59,12 @@ export class HomeComponent implements OnInit, OnDestroy {
       .subscribe((dayForecast: any) => {
         if (!!dayForecast.dt) {
           this.dayForecast = dayForecast;
-          const icon = dayForecast.weather[0].icon;
-          this.store.dispatch(new SetImage(icon));
+          //todo: add wheather icon
+          // const icon = dayForecast.weather[0].icon;
+          // this.store.dispatch(new SetImage(icon));
         }
       });
-    //todo: add wheather icon
+
     this.store
       .select(ForecastState.GetIcon)
       .pipe(takeUntil(this.destroy))
@@ -109,14 +109,15 @@ export class HomeComponent implements OnInit, OnDestroy {
   public calendarMonthChanged(date): void {
     this.monthlyAppointments = null;
     const keys = moment(date).format('YYYY-MM').split('-');
-    this.store
+    this.refresh$ =this.store
       .select(HomesState.findMonthAppointments)
       .pipe(
         takeUntil(this.destroy),
         delay(0),
         map((filterFn) => filterFn(keys[0], keys[1]))
-      )
-      .subscribe((month) => {
+      );
+
+      this.refresh$.subscribe((month) => {
         this.monthlyAppointments = month;
       });
     this.cdr.detectChanges();

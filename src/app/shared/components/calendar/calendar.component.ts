@@ -43,9 +43,9 @@ export class CalendarComponent implements OnInit {
   public selectedDate: string;
 
   @Input() public selected;
-  @Input() public appointments$: Observable<IAppointment[]>;
+
   @Input() public monthlyAppointments:IAppointment[];
-  @Input() public refresh:boolean;
+  @Input() public refresh: Observable<IAppointment[]>;
 
   @Output() public daySelected: EventEmitter<moment.Moment> = new EventEmitter();  
   @Output() public appointmentSelected: EventEmitter<IAppointment> = new EventEmitter();
@@ -53,7 +53,7 @@ export class CalendarComponent implements OnInit {
 
 
   private localeData = moment.localeData();
-  private destroy: Subject<boolean> = new Subject<boolean>();
+  private destroy$: Subject<boolean> = new Subject<boolean>();
   y;
   constructor() {}
 
@@ -64,12 +64,20 @@ export class CalendarComponent implements OnInit {
     this.selectedDate = moment(this.today).format('DD/MM/YYYY');
     this.monthChanged.emit(this.today);
     this.daySelected.emit(moment());
+
       this.renderCalendar();
   }
 
   ngOnChanges(){
     if(this.monthlyAppointments ){
       this.renderCalendar();
+    }if(this.refresh){
+      this.destroy$.next(true)
+      this.refresh.pipe(takeUntil(this.destroy$)).subscribe(month=>{
+        this.monthlyAppointments=month;
+        this.renderCalendar();
+  
+      })
     }
   }
 
@@ -112,12 +120,13 @@ export class CalendarComponent implements OnInit {
         const newDate = moment(firstDayOfGrid).date(date);
         const isOffMonth = this.isOffMonth(newDate);
         // refactor
+        const hasAppointment= isOffMonth ? [] :this.hasAppointments(newDate)
 
         return {
           today: this.isToday(newDate),
           isSelected: this.isSelected(newDate),
           date: newDate,
-          appointments: this.hasAppointments(newDate),
+          appointments: hasAppointment,
           classNames: {
             weekend: this.isWeekend(newDate) && !isOffMonth,
             offMonth: isOffMonth,
@@ -180,7 +189,7 @@ export class CalendarComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.destroy.next(true);
-    this.destroy.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }
